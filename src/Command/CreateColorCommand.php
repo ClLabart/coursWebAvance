@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Habitat;
+use App\Entity\Color;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -14,10 +14,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
-    name: 'CreateHabitat',
-    description: 'Create all the habitats in the db',
+    name: 'CreateColor',
+    description: 'Create all the colors in the db',
 )]
-class CreateHabitatCommand extends Command
+class CreateColorCommand extends Command
 {
     private EntityManagerInterface $em;
     private HttpClientInterface $client;
@@ -31,7 +31,7 @@ class CreateHabitatCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->recursiveImport($output, "https://pokeapi.co/api/v2/pokemon-habitat");
+        $this->recursiveImport($output, "https://pokeapi.co/api/v2/pokemon-color");
 
         $this->em->flush();
 
@@ -46,13 +46,13 @@ class CreateHabitatCommand extends Command
             $url
         );
 
-        $habitats = json_decode($response->getContent());
+        $colors = json_decode($response->getContent());
 
-        foreach($habitats->results as $habitat) {
-            $habitatEntity = new Habitat();
-            $habitatEntity->setName($habitat->name);
-            $this->em->persist($habitatEntity);
-            $output->writeln(ucfirst($habitatEntity->getName()) . ' created !');
+        foreach($colors->results as $color) {
+            $colorEntity = new Color();
+            $colorEntity->setName($color->name);
+            $this->em->persist($colorEntity);
+            $output->writeln(ucfirst($colorEntity->getName()) . ' created !');
         }
     }
 }

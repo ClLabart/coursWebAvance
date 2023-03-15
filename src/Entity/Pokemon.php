@@ -2,34 +2,49 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\PokemonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PokemonRepository::class)]
-#[ApiResource(operations: [
-    new Get()
-])]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection()
+    ],
+    normalizationContext: ['groups' => ['read', 'test']],
+    paginationItemsPerPage: 10
+)]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'exact'])]
 class Pokemon
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read','test'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['test'])]
     private ?int $weight = null;
 
     #[ORM\ManyToMany(targetEntity: Type::class, inversedBy: 'pokemons')]
+    #[Groups(['read','test'])]
     private Collection $types;
 
     #[ORM\ManyToOne(inversedBy: 'pokemons')]
+    #[Groups(['read','test'])]
     private ?Habitat $habitat = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -61,6 +76,9 @@ class Pokemon
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $official_artwork_front_shiny = null;
+
+    #[ORM\ManyToOne(inversedBy: 'pokemons')]
+    private ?Color $color = null;
 
     public function __construct()
     {
@@ -248,6 +266,18 @@ class Pokemon
     public function setOfficialArtworkFrontShiny(string $official_artwork_front_shiny): self
     {
         $this->official_artwork_front_shiny = $official_artwork_front_shiny;
+
+        return $this;
+    }
+
+    public function getColor(): ?Color
+    {
+        return $this->color;
+    }
+
+    public function setColor(?Color $color): self
+    {
+        $this->color = $color;
 
         return $this;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Habitat;
+use App\Entity\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -14,10 +14,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
-    name: 'CreateHabitat',
-    description: 'Create all the habitats in the db',
+    name: 'CreateType',
+    description: 'Create all the types in the db',
 )]
-class CreateHabitatCommand extends Command
+class CreateTypeCommand extends Command
 {
     private EntityManagerInterface $em;
     private HttpClientInterface $client;
@@ -31,7 +31,7 @@ class CreateHabitatCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->recursiveImport($output, "https://pokeapi.co/api/v2/pokemon-habitat");
+        $this->recursiveImport($output, "https://pokeapi.co/api/v2/type");
 
         $this->em->flush();
 
@@ -39,20 +39,20 @@ class CreateHabitatCommand extends Command
 
         return Command::SUCCESS;
     }
-
+    
     protected function recursiveImport(OutputInterface $output, $url) {
         $response = $this->client->request(
             'GET',
             $url
         );
 
-        $habitats = json_decode($response->getContent());
+        $types = json_decode($response->getContent());
 
-        foreach($habitats->results as $habitat) {
-            $habitatEntity = new Habitat();
-            $habitatEntity->setName($habitat->name);
-            $this->em->persist($habitatEntity);
-            $output->writeln(ucfirst($habitatEntity->getName()) . ' created !');
+        foreach($types->results as $type) {
+            $typeEntity = new Type();
+            $typeEntity->setName($type->name);
+            $this->em->persist($typeEntity);
+            $output->writeln(ucfirst($typeEntity->getName()) . ' created !');
         }
     }
 }
