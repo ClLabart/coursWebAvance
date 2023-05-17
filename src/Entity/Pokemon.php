@@ -16,68 +16,78 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: PokemonRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
-        new GetCollection()
+        new Get(normalizationContext: ['groups' => 'get']),
+        new GetCollection(normalizationContext: ['groups' => 'getCollection'])
     ],
-    normalizationContext: ['groups' => ['read', 'test']],
-    paginationItemsPerPage: 10
+    paginationItemsPerPage: 20
 )]
-#[ApiFilter(SearchFilter::class, properties: ['name' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'partial', 'id' => 'exact'])]
 class Pokemon
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read','test'])]
+    #[Groups(['get', 'getCollection'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read'])]
+    #[Groups(['get', 'getCollection'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['test'])]
+    #[Groups(['get'])]
     private ?int $weight = null;
 
     #[ORM\ManyToMany(targetEntity: Type::class, inversedBy: 'pokemons')]
-    #[Groups(['read','test'])]
+    #[Groups(['get'])]
     private Collection $types;
 
     #[ORM\ManyToOne(inversedBy: 'pokemons')]
-    #[Groups(['read','test'])]
+    #[Groups(['get'])]
     private ?Habitat $habitat = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $front_default = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $front_shiny = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $front_female = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $front_shiny_female = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $back_default = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $back_shiny = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $back_female = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $back_shiny_female = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $official_artwork_front_default = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['get', 'getCollection'])]
     private ?string $official_artwork_front_shiny = null;
 
     #[ORM\ManyToOne(inversedBy: 'pokemons')]
+    #[Groups(['get'])]
     private ?Color $color = null;
 
     public function __construct()
@@ -117,7 +127,7 @@ class Pokemon
     /**
      * @return Collection<int, Type>
      */
-    public function getType(): Collection
+    public function getTypes(): Collection
     {
         return $this->types;
     }

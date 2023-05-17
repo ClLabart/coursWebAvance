@@ -1,0 +1,1 @@
+Pour créer un utilisateur faire la commande **php bin/console app:create-user**
