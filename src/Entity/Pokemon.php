@@ -16,8 +16,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: PokemonRepository::class)]
 #[ApiResource(
     operations: [
+        new GetCollection(normalizationContext: ['groups' => 'getCollection']),
         new Get(normalizationContext: ['groups' => 'get']),
-        new GetCollection(normalizationContext: ['groups' => 'getCollection'])
     ],
     paginationItemsPerPage: 20
 )]
@@ -87,7 +87,7 @@ class Pokemon
     private ?string $official_artwork_front_shiny = null;
 
     #[ORM\ManyToOne(inversedBy: 'pokemons')]
-    #[Groups(['get'])]
+    #[Groups(['get', 'getCollection'])]
     private ?Color $color = null;
 
     public function __construct()
